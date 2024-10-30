@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthenticator } from "@aws-amplify/ui-react";
 import { useState, useEffect } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
@@ -13,8 +14,10 @@ Amplify.configure(outputs);
 const client = generateClient<Schema>();
 
 export default function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
+    
+  
+  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]); 
+  const { user, signOut } = useAuthenticator();
   function listTodos() {
     client.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
@@ -34,6 +37,7 @@ export default function App() {
   return (
     <main>
       <h1>My todos</h1>
+      <h1>{user?.signInDetails?.loginId}' to-dos</h1>
       <button onClick={createTodo}>+ new</button>
       <ul>
         {todos.map((todo) => (
@@ -47,6 +51,7 @@ export default function App() {
           Review next steps of this tutorial.
         </a>
       </div>
+            <button onClick={signOut}>Sign out</button>
     </main>
   );
 }
